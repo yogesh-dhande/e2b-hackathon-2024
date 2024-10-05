@@ -5,6 +5,11 @@ import os
 import streamlit as st
 import zipfile
 
+import streamlit.components.v1 as components
+
+from agents import convert_flask_to_fastapi
+from e2b_sandbox import run_app
+
 
 st.write("# e2b-hackathon-2024")
 
@@ -28,10 +33,11 @@ if uploaded_file:
     base_tmpdir = "tmp"
 
     # Define the target directory: "tmp/<zip_file_name>/flask"
-    target_dir = os.path.join(base_tmpdir, zip_file_name, "flask")
+    target_flask_dir = os.path.join(base_tmpdir, zip_file_name, "flask")
+    target_fastapi_dir = os.path.join(base_tmpdir, zip_file_name, "fastapi")
 
     # Ensure the directory exists
-    os.makedirs(target_dir, exist_ok=True)
+    os.makedirs(target_flask_dir, exist_ok=True)
 
     # Open the ZIP file
     with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
@@ -46,7 +52,7 @@ if uploaded_file:
                 continue
             
             # Define the full path to extract to
-            file_path = os.path.join(target_dir, file_name)
+            file_path = os.path.join(target_flask_dir, file_name)
             
             # Extract each file to the target directory
             with open(file_path, "wb") as output_file:
@@ -58,7 +64,11 @@ if uploaded_file:
                       st.write(file_name)
                       st.code(content.decode('utf-8'))
                     time.sleep(2)
+
+    url = run_app(convert_flask_to_fastapi(target_flask_dir))
+    print(url)
+
+    container.empty()
+    with container:
+        st.link_button("Open FastAPI App in E2B Sandbox", url)
     
-    st.write(f"Extracted files to: {target_dir}")
-
-

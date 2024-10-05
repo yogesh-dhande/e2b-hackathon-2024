@@ -29,4 +29,4 @@ def run_agent(prompt):
 
 def convert_flask_to_fastapi(root_dir):
     # TODO: implement LLM agent to convert code to fastapi
-    return "sample_fastapi_app"
+    return "examples/fastapi/lost_and_found"
