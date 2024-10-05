@@ -1,28 +1,12 @@
-import streamlit as st
-from agents import run_agent
+
 import time
 import shutil
+import os
+import streamlit as st
+import zipfile
 
 
 st.write("# e2b-hackathon-2024")
-
-import streamlit as st
-import zipfile
-import tempfile
-import os
-
-st.session_state.status = "not ready"
-
-
-button = st.button("Run simulation")
-
-if button:
-  st.session_state.status = "running"
-  time.sleep(2)
-
-
-if "status" in st.session_state:
-  st.write(st.session_state.status)
 
 
 # Streamlit app
@@ -30,6 +14,10 @@ st.title("Upload and Extract ZIP File")
 
 # File uploader
 uploaded_file = st.file_uploader("Choose a ZIP file", type="zip")
+# Create a placeholder for the code block
+filepath_placeholder = st.empty()
+code_placeholder = st.empty()
+
 
 if uploaded_file:
 # Get the file name without the extension
@@ -63,7 +51,13 @@ if uploaded_file:
             # Extract each file to the target directory
             with open(file_path, "wb") as output_file:
                 with zip_ref.open(member) as source_file:
-                    output_file.write(source_file.read())
+                    content = source_file.read()
+                    output_file.write(content)
+                    filepath_placeholder.empty()
+                    filepath_placeholder.write(file_name)
+                    code_placeholder.empty()
+                    code_placeholder.code(content.decode('utf-8'))
+                    time.sleep(2)
     
     st.write(f"Extracted files to: {target_dir}")
 
