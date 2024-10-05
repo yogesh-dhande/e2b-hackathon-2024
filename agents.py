@@ -25,3 +25,8 @@ agent = build_simple_agent("write me a joke about given topic")
 
 def run_agent(prompt):
     return agent.invoke({"input": prompt})
+
+
+def convert_flask_to_fastapi(root_dir):
+    # TODO: implement LLM agent to convert code to fastapi
+    return "sample_fastapi_app"

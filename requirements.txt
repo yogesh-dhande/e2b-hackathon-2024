@@ -4,3 +4,4 @@ streamlit
 langchain-fireworks
 e2b-code-interpreter
 python-dotenv
+pydantic

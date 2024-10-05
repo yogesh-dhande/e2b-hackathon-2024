@@ -10,13 +10,12 @@ st.write("# e2b-hackathon-2024")
 
 
 # Streamlit app
-st.title("Upload and Extract ZIP File")
+st.title("Upload ZIP File of your Flask App")
 
 # File uploader
 uploaded_file = st.file_uploader("Choose a ZIP file", type="zip")
 # Create a placeholder for the code block
-filepath_placeholder = st.empty()
-code_placeholder = st.empty()
+container = st.empty()
 
 
 if uploaded_file:
@@ -43,6 +42,7 @@ if uploaded_file:
             
             # Skip directories
             if not file_name:
+                # TODO: Handle directories
                 continue
             
             # Define the full path to extract to
@@ -53,10 +53,10 @@ if uploaded_file:
                 with zip_ref.open(member) as source_file:
                     content = source_file.read()
                     output_file.write(content)
-                    filepath_placeholder.empty()
-                    filepath_placeholder.write(file_name)
-                    code_placeholder.empty()
-                    code_placeholder.code(content.decode('utf-8'))
+                    
+                    with container:
+                      st.write(file_name)
+                      st.code(content.decode('utf-8'))
                     time.sleep(2)
     
     st.write(f"Extracted files to: {target_dir}")
