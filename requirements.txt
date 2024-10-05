@@ -1,6 +1,5 @@
-langchain
-langgraph
-streamlit
-langchain-fireworks
-e2b-code-interpreter
-python-dotenv
+fastapi
+sqlalchemy
+pydantic
+uvicorn
+e2b_code_interpreter

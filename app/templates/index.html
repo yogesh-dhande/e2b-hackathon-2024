@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost and Found</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Lost and Found Network</h1>
+
+    <h2>Report a Lost Item</h2>
+    <form action="/items/lost/" method="post">
+        <label for="name">Item Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required><br>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required><br>
+
+        <label for="lost_date">Lost Date:</label>
+        <input type="datetime-local" id="lost_date" name="lost_date" required><br>
+
+        <button type="submit">Report Lost Item</button>
+    </form>
+
+    <h2>Lost Items</h2>
+    <ul>
+        {% for item in items %}
+        <li>
+            <strong>{{ item.name }}</strong> - {{ item.description }} ({{ item.location }}, {{ item.lost_date }})
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
