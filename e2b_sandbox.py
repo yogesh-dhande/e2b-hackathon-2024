@@ -23,10 +23,10 @@ def run_app(local_project_folder):
     st.session_state.stdout = "No output yet"
 
     def handle_stdout(output):
-        st.session_state.stdout = output.line
+        print(output.line) # st.session_state.output.line
 
     def handle_stderr(output):
-        st.session_state.stderr = output.line
+        print(output.line)
         
 
     # Copy the files from the local project folder to the e2b sandbox
@@ -61,13 +61,10 @@ def run_app(local_project_folder):
     st.session_state.url = url
     st.session_state.sandbox_id = sandbox.id
     sandbox.process.start(
-        f"cd {app_dir} && touch error.txt",
-    ).wait()
-    sandbox.process.start(
-        f"cd {app_dir} && sudo uvicorn main:app --host 0.0.0.0 --port {open_port} 2> error.txt",
+        f"cd {app_dir} && sudo uvicorn app:app --host 0.0.0.0 --port {open_port}",
         on_stdout=handle_stdout,
         on_stderr=handle_stderr
-    ).wait()
+    )
     sandbox.keep_alive(60 * 2)
     sandbox.close()
     return url
@@ -84,4 +81,4 @@ def get_sandbox_error(sandbox_id):
 
 
 if __name__ == "__main__":
-    run_app("examples/fastapi/simple_api")
+    run_app("tmp/hello/fastapi")

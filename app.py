@@ -7,6 +7,7 @@ import zipfile
 
 from agents import convert_flask_to_fastapi
 from e2b_sandbox import get_sandbox_error, run_app
+from llm import convert_to_fastapi
 
 
 st.write("# Flask to the Future - Convert Flask apps to FastAPI")
@@ -45,7 +46,7 @@ if uploaded_file:
             file_name = os.path.basename(member)
             
             # Skip directories
-            if not file_name:
+            if not file_name or ".py" not in file_name:
                 # TODO: Handle directories
                 continue
             
@@ -63,15 +64,9 @@ if uploaded_file:
                       st.code(content.decode('utf-8'))
                     time.sleep(2)
 
-    app_url = run_app(convert_flask_to_fastapi(target_flask_dir))
+    app_url = run_app(convert_to_fastapi(target_flask_dir))
 
     if "url" in st.session_state:
         container.empty()
         with container:
             st.link_button("Open FastAPI App in E2B Sandbox", app_url)
-
-while True:
-    time.sleep(1)
-    if "sandbox_id" in st.session_state:
-      error = get_sandbox_error(st.session_state.sandbox_id)
-      print("error", error)
