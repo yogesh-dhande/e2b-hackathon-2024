@@ -5,13 +5,13 @@ import os
 import streamlit as st
 import zipfile
 
+from agents import convert_flask_to_fastapi
+from e2b_sandbox import get_sandbox_error, run_app
+from llm import convert_to_fastapi
+
 import streamlit.components.v1 as components
 
-from agents import convert_flask_to_fastapi
-from e2b_sandbox import run_app
-
-
-st.write("# e2b-hackathon-2024")
+st.write("# Flask to the Future - Convert Flask apps to FastAPI")
 
 
 # Streamlit app
@@ -47,7 +47,7 @@ if uploaded_file:
             file_name = os.path.basename(member)
             
             # Skip directories
-            if not file_name:
+            if not file_name or ".py" not in file_name:
                 # TODO: Handle directories
                 continue
             
@@ -65,10 +65,9 @@ if uploaded_file:
                       st.code(content.decode('utf-8'))
                     time.sleep(2)
 
-    url = run_app(convert_flask_to_fastapi(target_flask_dir))
-    print(url)
+    app_url = run_app(convert_to_fastapi(target_flask_dir))
 
-    container.empty()
-    with container:
-        st.link_button("Open FastAPI App in E2B Sandbox", url)
-    
+    if "url" in st.session_state:
+        container.empty()
+        with container:
+            st.link_button("Open FastAPI App in E2B Sandbox", app_url)

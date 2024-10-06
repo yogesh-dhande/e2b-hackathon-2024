@@ -1,6 +1,9 @@
 import os
 import time
 from e2b_code_interpreter import CodeInterpreter
+from e2b import Sandbox
+
+import streamlit as st
 
 # Initialize sandbox
 sandbox = CodeInterpreter()
@@ -16,6 +19,17 @@ sandbox.filesystem.make_dir(f"{app_dir}/static")
 
 
 def run_app(local_project_folder):
+    st.session_state.stderr = "No errors yet"
+    st.session_state.stdout = "No output yet"
+
+    def handle_stdout(output):
+        print(output.line) # st.session_state.output.line
+
+    def handle_stderr(output):
+        print(output.line)
+        
+
+    # Copy the files from the local project folder to the e2b sandbox
     for root, dirs, files in os.walk(local_project_folder):
         for file in files:
             if "__pycache__" in root or "__pycache__" in file or file.endswith(".db"): 
@@ -31,19 +45,12 @@ def run_app(local_project_folder):
                 content = f.read()
                 sandbox.filesystem.write(remote_path, content)
 
-    # Install necessary packages in the e2b sandbox environment
-    sandbox.process.start(
-        "ls -lah /home/user/app", 
-        on_stdout=lambda output: print("Installing dependencies: ", output.line),
-        on_stderr=lambda output: print("Error installing dependencies: ", output.line)
-    ).wait()
-
 
     # Install necessary packages in the e2b sandbox environment
     sandbox.process.start(
         "pip install --upgrade pip && pip install fastapi sqlalchemy uvicorn jinja2 python-multipart", 
-        on_stdout=lambda output: print("Installing dependencies: ", output.line),
-        on_stderr=lambda output: print("Error installing dependencies: ", output.line)
+        on_stdout=handle_stdout,
+        on_stderr=handle_stderr
     ).wait()
 
     # Start the FastAPI server in the sandbox
@@ -51,12 +58,27 @@ def run_app(local_project_folder):
     domain = sandbox.get_hostname(open_port)
     url = f"https://{domain}"
     print(f"FastAPI app will run at {url}")
-
+    st.session_state.url = url
+    st.session_state.sandbox_id = sandbox.id
     sandbox.process.start(
-        f"cd {app_dir} && sudo uvicorn main:app --host 0.0.0.0 --port {open_port} --reload",
-        on_stdout=lambda output: print("STDOUT: ", output.line),  # Capture stdout logs
-        on_stderr=lambda output: print("STDERR: ", output.line),  # Capture stderr logs
+        f"cd {app_dir} && sudo uvicorn app:app --host 0.0.0.0 --port {open_port}",
+        on_stdout=handle_stdout,
+        on_stderr=handle_stderr
     )
-    sandbox.keep_alive(60 * 5)
+    sandbox.keep_alive(60 * 2)
     sandbox.close()
     return url
+
+
+def get_sandbox_error(sandbox_id):
+    try:
+        sandbox = Sandbox.reconnect(sandbox_id) 
+        error = sandbox.filesystem.read("/home/user/app/error.txt")
+        return error
+    except Exception as e:
+        pass
+    
+
+
+if __name__ == "__main__":
+    run_app("tmp/hello/fastapi")
