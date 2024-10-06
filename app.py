@@ -9,6 +9,7 @@ from agents import convert_flask_to_fastapi
 from e2b_sandbox import get_sandbox_error, run_app
 from llm import convert_to_fastapi
 
+import streamlit.components.v1 as components
 
 st.write("# Flask to the Future - Convert Flask apps to FastAPI")
 

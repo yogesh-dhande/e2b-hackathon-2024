@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import models, crud, database, schemas
 from fastapi.responses import RedirectResponse
 
-app = FastAPI2()
+app = FastAPI()
 
 # Set up the templates directory
 templates = Jinja2Templates(directory="templates")
