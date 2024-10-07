@@ -5,20 +5,20 @@ from e2b import Sandbox
 
 import streamlit as st
 
-# Initialize sandbox
-sandbox = CodeInterpreter()
-
-# Define the directories and necessary files for the app
-home_dir = "/home/user"
-app_dir = f"{home_dir}/app"
-
-# Create the app folder and the necessary subfolders
-sandbox.filesystem.make_dir(app_dir)
-sandbox.filesystem.make_dir(f"{app_dir}/templates")
-sandbox.filesystem.make_dir(f"{app_dir}/static")
 
 
 def run_app(local_project_folder):
+    # Initialize sandbox
+    sandbox = CodeInterpreter()
+
+    # Define the directories and necessary files for the app
+    home_dir = "/home/user"
+    app_dir = f"{home_dir}/app"
+
+    # Create the app folder and the necessary subfolders
+    sandbox.filesystem.make_dir(app_dir)
+    sandbox.filesystem.make_dir(f"{app_dir}/templates")
+    sandbox.filesystem.make_dir(f"{app_dir}/static")
     st.session_state.stderr = "No errors yet"
     st.session_state.stdout = "No output yet"
 
